@@ -6,6 +6,12 @@ contract Escrow {
   uint256 public createdAt = 0;
   uint256 public buyerOK = 0;
   uint256 public sellerOK = 0;
+  bool public isDone = false;
+
+  modifier valid {
+    require(isDone == false, "Contract is DONE");
+    _;
+  }
 
   constructor(address _seller) public payable {
     // TODO: validate deposit value???
@@ -15,7 +21,7 @@ contract Escrow {
     createdAt = now;
   }
 
-  function accept() public {
+  function accept() public valid {
     if (msg.sender == buyer && buyerOK == 0) {
       buyerOK = now;
     } else if (msg.sender == seller && sellerOK == 0) {
@@ -25,12 +31,12 @@ contract Escrow {
     if (buyerOK != 0 && sellerOK != 0) {
       // release money to seller
       seller.transfer(address(this).balance);
-      // then, destroy contract
-      selfdestruct(buyer);
+      // mark contract done
+      isDone = true;
     }
   }
 
-  function reject() public {
+  function reject() public valid {
     if (msg.sender == seller) {
       // refund to buyer
       buyer.transfer(address(this).balance);
@@ -39,7 +45,7 @@ contract Escrow {
       // then, refund to buyer
       buyer.transfer(address(this).balance);
     }
-    // destroy contract
-    selfdestruct(buyer);
+    // mark contract done
+    isDone = true;
   }
 }
