@@ -1,5 +1,21 @@
 pragma solidity ^0.4.18;
 
+contract Store {
+  address child;
+
+  event Deposit(
+    address indexed _buyer,
+    address indexed _seller,
+    uint _value
+  );
+
+  function createEscrowContract(address _seller) public payable {
+    child = new Escrow(_seller);
+
+    emit Deposit(msg.sender, _seller, msg.value);
+  }
+}
+
 contract Escrow {
   address public buyer;
   address public seller;

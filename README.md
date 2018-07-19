@@ -67,3 +67,8 @@ keep deployed instance
 ```
 Escrow.deployed().then(function(res){contractInstance = Escrow.at(res.address)});
 ```
+
+------------------------------
+
+## webpack
+how to use: https://truffleframework.com/boxes/webpack
